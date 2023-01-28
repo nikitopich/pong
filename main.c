@@ -11,6 +11,8 @@
 #define X_LEFT_RACKET 1
 #define X_RIGHT_RACKET 59
 
+#define SCORE_WIN 21
+
 #define MOVE_UP 1
 #define MOVE_MIDDLE_LEFT 2
 #define MOVE_MIDDLE_RIGHT 3
@@ -21,6 +23,8 @@ int ballInitX = 30;
 int ballInitY;
 int xBall;
 int yBall;
+int player1 = 0;
+int player2 = 0;
 
 
 void initBoard();
@@ -90,6 +94,7 @@ void printBoard() {
         printf("\n");
     }
     printf("\n");
+    printf("%d : %d", player1, player1);
 }
 
 int ballMoveLeft() {
@@ -121,5 +126,22 @@ void ballInitMoving() {
 void move_racket_up() {
     int who;
 
+}
+
+void score(int player) {
+    if(player == 1) {
+        player1++;
+        if (player1 == SCORE_WIN) {
+            printf("PLAYER 1 win!");
+        }
+        initGame();
+    }
+    if (player == 2) {
+        player2++;
+        if (player2 == SCORE_WIN) {
+            printf("PLAYER 2 win!");
+        }
+        initGame();
+    }
 }
 
