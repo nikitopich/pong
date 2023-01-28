@@ -2,14 +2,14 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define BOARD_HEIGHT 16
-#define BOARD_WIDTH 61
-#define BOARD_X_MIDDLE 30
+#define BOARD_HEIGHT 25
+#define BOARD_WIDTH 80
+#define BOARD_X_MIDDLE 40
 
-#define RACKET_UPPER_POSITION 6
+#define RACKET_UPPER_POSITION 7
 #define RACKET_BOTTOM_POSITION 10
 #define X_LEFT_RACKET 1
-#define X_RIGHT_RACKET 59
+#define X_RIGHT_RACKET 79
 
 #define SCORE_WIN 21
 
@@ -39,9 +39,16 @@ void printBoard();
 
 void ballInitMoving();
 
+void move_racket();
+
 int main() {
-    initGame();
-//    printBoard();
+ //   initGame();
+
+    initBoard();
+    initRackets();
+    printBoard();
+    move_racket();
+    printBoard();
 
     return 0;
 }
@@ -94,7 +101,7 @@ void printBoard() {
         printf("\n");
     }
     printf("\n");
-    printf("%d : %d", player1, player1);
+    printf("%d : %d\n", player1, player1);
 }
 
 int ballMoveLeft() {
@@ -123,9 +130,39 @@ void ballInitMoving() {
     }
 }
 
-void move_racket_up() {
-    int who;
+void move_racket() {
+    char move;
+    int upper_left = RACKET_UPPER_POSITION;
+    int upper_right = RACKET_UPPER_POSITION;
+    int bottom_left = RACKET_BOTTOM_POSITION;
+    int bottom_right = RACKET_BOTTOM_POSITION;
 
+    switch (move = getchar()) {
+        case 'A':
+            if (upper_left - 1 > 0) {
+                board[bottom_left - 1][1] = ' ';
+                board[upper_left - 1][1] = '\\';
+            }
+                break;
+        case 'Z':
+            if (bottom_left + 1 < BOARD_HEIGHT) {
+                board[upper_left][1] = ' ';
+                board[bottom_left][1] = '\\';
+            }
+            break;
+        case 'K':
+            if (upper_right - 1 > 0) {
+                board[bottom_right - 1][BOARD_HEIGHT - 1] = ' ';
+                board[upper_right - 1][BOARD_HEIGHT - 1] = '\\';
+            }
+            break;
+        case 'M':
+            if (bottom_right + 1 < BOARD_HEIGHT) {
+                board[upper_right][BOARD_WIDTH - 1] = ' ';
+                board[bottom_right][BOARD_WIDTH - 1] = '\\';
+            }
+                break;
+    }
 }
 
 void score(int player) {
