@@ -11,26 +11,24 @@
 #define X_LEFT_RACKET 1
 #define X_RIGHT_RACKET 59
 
-#define MOVE_UP 1
-#define MOVE_MIDDLE_LEFT 2
-#define MOVE_MIDDLE_RIGHT 3
-#define MOVE_DOWN 4
+#define MOVE_UP_LEFT 0
+#define MOVE_UP_RIGHT 1
+#define MOVE_DOWN_LEFT 2
+#define MOVE_DOWN_RIGHT 3
 
 char board[BOARD_HEIGHT][BOARD_WIDTH];
 int ballInitX = 30;
 int ballInitY;
-int player1Win = 0;
-int player2Win = 0; // 0/1
 int xBall;
 int yBall;
+
+void initGame();
 
 void initBoard();
 
 void initRackets();
 
 void initBall();
-
-void initGame();
 
 void printBoard();
 
@@ -56,7 +54,7 @@ int moveBallVertical(int temp_pos, int deadLine);
 
 int main() {
     initGame();
-//    printBoard();
+    ballInitMoving();
 
     return 0;
 }
@@ -65,7 +63,6 @@ void initGame() {
     initBoard();
     initRackets();
     initBall();
-    ballInitMoving();
 }
 
 void initBoard() {
@@ -102,28 +99,74 @@ int generateRandBallY() {
 void ballInitMoving() {
     xBall = ballInitX;
     yBall = ballInitY;
+    srand(time(NULL));
+    int direction = rand() % (4 + 1);
     while (xBall > 0 && xBall < BOARD_WIDTH &&
-           yBall > 0 && yBall < BOARD_HEIGHT) {
-        if (!ballMoveLeft()) {
-            printf("\nFail\n");
-            player2Win = 1;
-            break;
-        }
-        if (!ballMoveRight()) {
-            printf("\nFail\n");
-            player1Win = 1;
-            break;
-        }
-        if (!ballMoveUp()) {
-            break;
-        }
-        if (!ballMoveDown()) {
-            printf("\nFail\n");
-            player1Win = 1;
-            break;
-        }
+           yBall > 0 && yBall < BOARD_HEIGHT)
+    {
+        switch (direction) {
+            case MOVE_UP_LEFT: {
+                switch (ballMoveLeft()) {
+                    case 0: {
+                        return;
+                    }
+                    case -1: {
+                        direction = MOVE_UP_RIGHT;
+                        break;
+                    }
+                }
+                if (!ballMoveUp()) {
+                    direction = MOVE_DOWN_LEFT;
+                }
+                break;
+            }
+            case MOVE_DOWN_LEFT: {
+                switch (ballMoveLeft()) {
+                    case 0: {
+                        return;
+                    }
+                    case -1: {
+                        direction = MOVE_DOWN_RIGHT;
+                        break;
+                    }
+                }
+                if (!ballMoveDown()) {
+                    direction = MOVE_UP_LEFT;
+                }
+                break;
+            }
+            case MOVE_UP_RIGHT: {
+                switch (ballMoveRight()) {
+                    case 0: {
+                        return;
+                    }
+                    case -1: {
+                        direction = MOVE_UP_LEFT;
+                        break;
+                    }
+                }
+                if (!ballMoveUp()) {
+                    direction = MOVE_DOWN_RIGHT;
+                }
+                break;
+            }
+            case MOVE_DOWN_RIGHT: {
+                switch (ballMoveRight()) {
+                    case 0: {
+                        return;
+                    }
+                    case -1: {
+                        direction = MOVE_DOWN_LEFT;
+                        break;
+                    }
+                }
+                if (!ballMoveDown()) {
+                    direction = MOVE_UP_RIGHT;
+                }
+                break;
+            }
 
-        printBoard();
+        }
     }
 }
 
@@ -139,7 +182,11 @@ int ballMoveRight() {
 
 int moveBallHorizontal(int temp_pos, int deadLine) {
     char temp_char = board[yBall][temp_pos];
-    if (temp_pos == deadLine) return 0;
+    if (temp_char == '\\') return -1;
+    if (temp_pos == deadLine) {
+        printf("\nFail\n");
+        return 0;
+    }
     else {
         switchHorizontalBallAndBoardProp(temp_char, temp_pos);
     }
@@ -154,12 +201,12 @@ void switchHorizontalBallAndBoardProp(char temp_char, int temp_pos) {
 
 int ballMoveUp() {
     int temp_pos_y_u = yBall - 1;
-    return moveBallVertical(temp_pos_y_u, BOARD_HEIGHT);
+    return moveBallVertical(temp_pos_y_u, 0);
 }
 
 int ballMoveDown() {
     int temp_pos_y_d = yBall + 1;
-    return moveBallVertical(temp_pos_y_d, 0);
+    return moveBallVertical(temp_pos_y_d, BOARD_HEIGHT);
 }
 
 int moveBallVertical(int temp_pos, int deadLine) {
